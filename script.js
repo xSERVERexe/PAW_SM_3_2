@@ -1,5 +1,9 @@
 const form = document.getElementById("noaaForm");
 const tokenInput = document.getElementById("apiTokenInput");
+const datasetInput = document.getElementById("datasetInput");
+const locationInput = document.getElementById("locationInput");
+const startDateInput = document.getElementById("startDateInput");
+const endDateInput = document.getElementById("endDateInput");
 const tableBody = document.getElementById("dataTableBody");
 const messageContainer = document.getElementById("messageContainer");
 
@@ -15,12 +19,21 @@ form.addEventListener("submit", async (event) => {
     }
 
     messageContainer.style.color = "black";
-    messageContainer.textContent = "Pobieranie zbiorów danych z NOAA API...";
+    messageContainer.textContent =
+        "Pobieranie sparametryzowanych danych z NOAA API...";
     tableBody.innerHTML = "";
 
     try {
-        const proxyUrl =
-            "https://cors-anywhere.herokuapp.com/https://www.ncei.noaa.gov/cdo-web/api/v2/datasets";
+        const params = new URLSearchParams({
+            datasetid: datasetInput.value.trim(),
+            locationid: locationInput.value.trim(),
+            startdate: startDateInput.value,
+            enddate: endDateInput.value,
+        });
+
+        const apiUrl = `https://www.ncei.noaa.gov/cdo-web/api/v2/data?${params.toString()}`;
+
+        const proxyUrl = `https://cors-anywhere.herokuapp.com/${apiUrl}`;
 
         const response = await fetch(proxyUrl, {
             method: "GET",
@@ -31,16 +44,18 @@ form.addEventListener("submit", async (event) => {
 
         if (!response.ok) {
             messageContainer.style.color = "red";
-            messageContainer.textContent = `Błąd HTTP: ${response.status} - sprawdź token.`;
+            messageContainer.textContent = `Błąd HTTP: ${response.status} - sprawdź token i poprawność parametrów.`;
             return;
         }
 
         const data = await response.json();
-        const datasets = data.results;
 
-        if (!datasets || datasets.length === 0) {
+        const records = data.results;
+
+        if (!records || records.length === 0) {
             messageContainer.style.color = "red";
-            messageContainer.textContent = "Brak danych w odpowiedzi API.";
+            messageContainer.textContent =
+                "Brak danych dla podanych parametrów.";
             return;
         }
 
@@ -48,18 +63,18 @@ form.addEventListener("submit", async (event) => {
 
         let rowsHTML = "";
 
-        datasets.forEach((dataset) => {
-            const id = dataset.id || "Brak danych";
-            const name = dataset.name || "Brak danych";
-            const minDate = dataset.mindate || "Brak danych";
-            const maxDate = dataset.maxdate || "Brak danych";
+        records.forEach((record) => {
+            const date = record.date ? record.date.split("T")[0] : "Brak";
+            const datatype = record.datatype || "Brak";
+            const station = record.station || "Brak";
+            const value = record.value !== undefined ? record.value : "Brak";
 
             rowsHTML += `
                 <tr>
-                    <td>${id}</td>
-                    <td>${name}</td>
-                    <td>${minDate}</td>
-                    <td>${maxDate}</td>
+                    <td>${date}</td>
+                    <td>${datatype}</td>
+                    <td>${station}</td>
+                    <td>${value}</td>
                 </tr>
             `;
         });
@@ -67,7 +82,6 @@ form.addEventListener("submit", async (event) => {
         tableBody.innerHTML = rowsHTML;
     } catch (error) {
         messageContainer.style.color = "red";
-        messageContainer.textContent =
-            "Wystąpił błąd podczas łączenia z serwerem.";
+        messageContainer.textContent = "Wystąpił błąd.";
     }
 });

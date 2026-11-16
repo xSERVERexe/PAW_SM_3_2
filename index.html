@@ -8,16 +8,50 @@
         <script src="script.js" defer></script>
     </head>
     <body>
-        <h2>Zbiory danych klimatycznych</h2>
+        <h2>Dane klimatyczne NOAA</h2>
 
         <form id="noaaForm">
-            <input
-                type="password"
-                id="apiTokenInput"
-                placeholder="Wklej swój token NOAA..."
-                required
-            />
-            <button type="submit">Pobierz zbiory danych</button>
+            <div>
+                <label>Token API:</label><br />
+                <input
+                    type="password"
+                    id="apiTokenInput"
+                    placeholder="Wklej swój token..."
+                    required
+                />
+            </div>
+            <div>
+                <label>Dataset ID:</label><br />
+                <input type="text" id="datasetInput" value="GHCND" required />
+            </div>
+            <div>
+                <label>Location ID:</label><br />
+                <input
+                    type="text"
+                    id="locationInput"
+                    value="ZIP:28801"
+                    required
+                />
+            </div>
+            <div>
+                <label>Start Date:</label><br />
+                <input
+                    type="date"
+                    id="startDateInput"
+                    value="2010-05-01"
+                    required
+                />
+            </div>
+            <div>
+                <label>End Date:</label><br />
+                <input
+                    type="date"
+                    id="endDateInput"
+                    value="2010-05-01"
+                    required
+                />
+            </div>
+            <button type="submit" style="margin-top: 10px">Pobierz dane</button>
         </form>
 
         <div id="messageContainer"></div>
@@ -25,10 +59,10 @@
         <table>
             <thead>
                 <tr>
-                    <th>Dataset ID</th>
-                    <th>Name</th>
-                    <th>Min Date</th>
-                    <th>Max Date</th>
+                    <th>Date</th>
+                    <th>Datatype</th>
+                    <th>Station</th>
+                    <th>Value</th>
                 </tr>
             </thead>
             <tbody id="dataTableBody"></tbody>

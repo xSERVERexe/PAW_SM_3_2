@@ -1,6 +1,6 @@
 const form = document.getElementById("noaaForm");
 const tokenInput = document.getElementById("apiTokenInput");
-const tableBody = document.getElementById("stationsTableBody");
+const tableBody = document.getElementById("dataTableBody");
 const messageContainer = document.getElementById("messageContainer");
 
 form.addEventListener("submit", async (event) => {
@@ -15,12 +15,12 @@ form.addEventListener("submit", async (event) => {
     }
 
     messageContainer.style.color = "black";
-    messageContainer.textContent = "Pobieranie danych z NOAA API...";
+    messageContainer.textContent = "Pobieranie zbiorów danych z NOAA API...";
     tableBody.innerHTML = "";
 
     try {
         const proxyUrl =
-            "https://cors-anywhere.herokuapp.com/https://www.ncei.noaa.gov/cdo-web/api/v2/stations";
+            "https://cors-anywhere.herokuapp.com/https://www.ncei.noaa.gov/cdo-web/api/v2/datasets";
 
         const response = await fetch(proxyUrl, {
             method: "GET",
@@ -31,16 +31,16 @@ form.addEventListener("submit", async (event) => {
 
         if (!response.ok) {
             messageContainer.style.color = "red";
-            messageContainer.textContent = `Błąd HTTP: ${response.status} - sprawdź poprawność tokenu.`;
+            messageContainer.textContent = `Błąd HTTP: ${response.status} - sprawdź token.`;
             return;
         }
 
         const data = await response.json();
-        const stations = data.results;
+        const datasets = data.results;
 
-        if (!stations || stations.length === 0) {
+        if (!datasets || datasets.length === 0) {
             messageContainer.style.color = "red";
-            messageContainer.textContent = "Brak stacji w odpowiedzi API.";
+            messageContainer.textContent = "Brak danych w odpowiedzi API.";
             return;
         }
 
@@ -48,24 +48,18 @@ form.addEventListener("submit", async (event) => {
 
         let rowsHTML = "";
 
-        stations.forEach((station) => {
-            const id = station.id || "Brak danych";
-            const name = station.name || "Brak danych";
-            const latitude =
-                station.latitude !== undefined
-                    ? station.latitude
-                    : "Brak danych";
-            const longitude =
-                station.longitude !== undefined
-                    ? station.longitude
-                    : "Brak danych";
+        datasets.forEach((dataset) => {
+            const id = dataset.id || "Brak danych";
+            const name = dataset.name || "Brak danych";
+            const minDate = dataset.mindate || "Brak danych";
+            const maxDate = dataset.maxdate || "Brak danych";
 
             rowsHTML += `
                 <tr>
                     <td>${id}</td>
                     <td>${name}</td>
-                    <td>${latitude}</td>
-                    <td>${longitude}</td>
+                    <td>${minDate}</td>
+                    <td>${maxDate}</td>
                 </tr>
             `;
         });

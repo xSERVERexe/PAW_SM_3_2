@@ -8,7 +8,7 @@
         <script src="script.js" defer></script>
     </head>
     <body>
-        <h2>Stacje klimatyczne NOAA</h2>
+        <h2>Zbiory danych klimatycznych</h2>
 
         <form id="noaaForm">
             <input
@@ -17,7 +17,7 @@
                 placeholder="Wklej swój token NOAA..."
                 required
             />
-            <button type="submit">Pobierz stacje</button>
+            <button type="submit">Pobierz zbiory danych</button>
         </form>
 
         <div id="messageContainer"></div>
@@ -25,13 +25,13 @@
         <table>
             <thead>
                 <tr>
-                    <th>Station ID</th>
+                    <th>Dataset ID</th>
                     <th>Name</th>
-                    <th>Latitude</th>
-                    <th>Longitude</th>
+                    <th>Min Date</th>
+                    <th>Max Date</th>
                 </tr>
             </thead>
-            <tbody id="stationsTableBody"></tbody>
+            <tbody id="dataTableBody"></tbody>
         </table>
     </body>
 </html>
